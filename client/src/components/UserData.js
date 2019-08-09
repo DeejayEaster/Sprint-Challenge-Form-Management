@@ -22,7 +22,7 @@ class UserData extends Component {
   render() {
     console.log(this.state.userData);
     return (
-      <div>
+      <div className="food-card">
         {this.state.userData.map(item => (
           <DataMessage item={item} />
         ))}
