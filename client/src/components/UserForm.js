@@ -5,7 +5,7 @@ import axios from "axios";
 
 const UserForm = ({ values, errors, touched, isSubmitting, status }) => {
   const [users, setUsers] = useState([]);
-
+  console.log("this is the value", values);
   useEffect(() => {
     if (status) {
       console.log("post users status: ", status);
@@ -15,18 +15,9 @@ const UserForm = ({ values, errors, touched, isSubmitting, status }) => {
   return (
     <Form>
       <h2 className="heading">Welcome back. Can you give us some info?</h2>
-      {touched.name && errors.name && <p>{errors.name}</p>}
+      {touched.username && errors.username && <p>{errors.username}</p>}
       <div className="ui fluid input">
-        <Field type="name" name="name" placeholder="Full Name" />
-      </div>
-      <div className="ui fluid input">
-        {touched.email && errors.email && <p>{errors.email}</p>}
-        <Field
-          type="email"
-          name="email"
-          placeholder="Email"
-          className="ui fluid input"
-        />
+        <Field type="username" name="username" placeholder="User Name" />
       </div>
       <div className="ui fluid input">
         {touched.password && errors.password && <p>{errors.password}</p>}
@@ -37,17 +28,6 @@ const UserForm = ({ values, errors, touched, isSubmitting, status }) => {
           className="ui fluid input"
         />
       </div>
-
-      <label>
-        {touched.tos && errors.tos && <p>{errors.tos}</p>}
-        <Field
-          type="checkbox"
-          name="tos"
-          checked={values.tos}
-          className="ui checkbox"
-        />
-        TOS
-      </label>
       <button disabled={isSubmitting} type="submit" className="ui button">
         Submit
       </button>
@@ -56,45 +36,35 @@ const UserForm = ({ values, errors, touched, isSubmitting, status }) => {
 };
 
 const FormikApp = withFormik({
-  mapPropsToValues({ name, email, password, tos }) {
+  mapPropsToValues({ username, password }) {
     return {
-      name: name || "",
-      email: email || "",
-      password: password || "",
-      tos: tos || true
+      username: username || "",
+      password: password || ""
     };
   },
 
   validationSchema: Yup.object().shape({
-    name: Yup.string().required(),
-    email: Yup.string()
-      .email("Email is not valid")
-      .required("Email is required"),
+    username: Yup.string().required(),
     password: Yup.string()
       .min(9, "password must be 9 char or longer")
-      .required("A password is required"),
-    tos: Yup.boolean().oneOf([true], "Must Accept Terms and Conditions")
+      .required("A password is required")
   }),
 
   handleSubmit(values, { setErrors, resetForm, setSubmitting, setStatus }) {
+    console.log("values right before axios", values);
     axios
-      .post("https://reqres.in/api/users", values)
+      .post("http://localhost:5000/api/register", values)
       .then(response => {
         console.log(response);
         setStatus(response.data);
-        window.alert(
-          `Created an account for ${response.data.email} with an id number of ${
-            response.data.id
-          }.`
-        );
       })
       .catch(err => {
         console.log("this is an error:", err);
       });
     console.log(values);
     setTimeout(() => {
-      if (values.email === "yummy@sandwhich.com") {
-        setErrors({ email: "That email is taken" });
+      if (values.username === "yummySandwich") {
+        setErrors({ username: "That username is taken" });
       } else {
         resetForm();
       }
